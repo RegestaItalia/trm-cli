@@ -17,8 +17,8 @@ const createAlias = program.command('createAlias')
 const listPackages = program.command('ls')
     .description('List all packages installed into system');
 
-/*const showInstalledPackage = program.command('explore <package>')
-    .description('View installed package on a system');*/
+const addRegistry = program.command('addRegistry <name>')
+    .description('Add a new registry');
 
 const profile = program.command('profile')
     .description('Change user profile parameter for registry');
@@ -61,9 +61,10 @@ registerCommand(listPackages, {
     skipRegistry: true
 });
 
-/*registerCommand(showInstalledPackage, {
-    skipRegistry: true
-});*/
+registerCommand(addRegistry, {
+    skipRegistry: true,
+    skipConnection: true
+});
 
 registerCommand(viewPackage, {
     skipRegistry: true
