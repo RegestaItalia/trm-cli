@@ -1,0 +1,37 @@
+{
+  "name": "trm-client",
+  "version": "0.1.0-alpha.1",
+  "description": "TRM (Transport Request Manager)",
+  "author": "Simone Gaffurini <simone.gaffurini@regestaitalia.it>",
+  "repository": "RegestaItalia/trm-cli",
+  "homepage": "https://trmregistry.regestaitalia.it/",
+  "license": "MIT",
+  "main": "src/index.js",
+  "bin": {
+    "trm": "./src/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "trm",
+    "abap",
+    "package manager"
+  ],
+  "dependencies": {
+    "abap-adt-api": "^5.0.5",
+    "adm-zip": "^0.5.10",
+    "cli-table": "^0.3.11",
+    "commander": "^10.0.0",
+    "dotenv": "^16.0.3",
+    "ini": "^4.0.0",
+    "inquirer": "^8.0.0",
+    "loading-cli": "^1.1.0",
+    "node-r3trans": "^0.1.0-alpha.4",
+    "node-rfc": "^2.7.1",
+    "object-keys-normalizer": "^1.0.1",
+    "semver": "^7.3.8",
+    "xml-js": "^1.6.11",
+    "xml2js": "^0.4.23"
+  }
+}
