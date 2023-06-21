@@ -33,13 +33,13 @@ module.exports = async (args) => {
     logger.loading("Retrieving data...");
     const allManifests = await getAll(adtClient);
     const generatedManifest = allManifests.find(o => {
-        if(o.manifest.name === packageName){
-            if(o.manifest.registry && o.manifest.registry.address){
-                if(registryInstance.getAddress() === o.manifest.registry.address){
+        if (o.manifest.name === packageName) {
+            if (o.manifest.registry && o.manifest.registry.address) {
+                if (registryInstance.getAddress() === o.manifest.registry.address) {
                     return true;
                 }
-            }else{
-                if(registryInstance.getRegistryType() === 'public'){
+            } else {
+                if (registryInstance.getRegistryType() === 'public') {
                     return true;
                 }
             }
@@ -67,9 +67,16 @@ module.exports = async (args) => {
             keepError = new Error(`You are not authorized to publish to "${packageName}".`);
         }
     } catch (e) {
-        if(keepError){
+        if (keepError) {
             throw keepError;
         }
+        if (generatedManifest) {
+            if(!version){
+                version = generatedManifest.manifest.version;
+            }
+            packageDefaults = generatedManifest.manifest;
+        }
+
         if (args.hasOwnProperty('packagePrivate')) {
             private = args.packagePrivate;
         } else {
@@ -99,16 +106,17 @@ module.exports = async (args) => {
         if (args.hasOwnProperty('license')) {
             packageDefaults.license = args.license;
         }
+
         logger.success(`Package "${packageName}" not yet published. Congratulations!`);
     }
     if (!version) {
         version = await generateVersion(registryInstance, packageName);
         logger.info(`Generated version ${version}`);
+    } else {
+        version = validateSem(version);
     }
 
-    if (publishedPackage) {
-        packageDefaults.devclass = publishedPackage.devclass;
-    }
+    packageDefaults.devclass = generatedManifest ? generatedManifest.adtObject['adtcore:packageName'] : undefined;
 
     const requiredPrompt1 = [{
         type: "input",
@@ -156,11 +164,11 @@ module.exports = async (args) => {
     const requiredAnswers1 = await inquirer.prompt(requiredPrompt1);
 
     const devclass = requiredAnswers1.devclass.trim().toUpperCase();
-    if(publishedPackage && publishedPackage.devclass !== devclass){
+    if (publishedPackage && publishedPackage.devclass !== devclass) {
         //package changed after publish
         //move manifest to this new package
         logger.info(`Package changed, original publish package was ${publishedPackage.devclass}`);
-        if(generatedManifest){
+        if (generatedManifest) {
             await tadirInterface(rfcClient, {
                 pgmid: 'R3TR',
                 object: generatedManifest.adtObject['adtcore:type'].substring(0, 4),
@@ -168,8 +176,8 @@ module.exports = async (args) => {
                 devclass
             });
         }
-    }else{
-        if(publishedPackages.find(o => o.devclass === devclass && !(o.packageName === packageName && o.registry === registryInstance.getAddress()))){
+    } else {
+        if (publishedPackages.find(o => o.devclass === devclass && !(o.packageName === packageName && o.registry === registryInstance.getAddress()))) {
             throw new Error(`Devclass ${devclass} already contains another package.`);
         }
     }
@@ -211,30 +219,30 @@ module.exports = async (args) => {
     }
 
     const trTarget = requiredAnswers2.trTarget;
-    
+
     const foundDependencies = await findDependencies(connection, {
         devclass
     });
-    
 
-    if(foundDependencies.missingManifest.length > 0 && !args.missingDependencyBypass){
+
+    if (foundDependencies.missingManifest.length > 0 && !args.missingDependencyBypass) {
         throw new Error(`Found ${foundDependencies.missingManifest.length} missing dependency packages. All dependencies must also have a package in registry ${registryInstance.getName()}.`);
     }
-    if(foundDependencies.depencencyManifest.length > 0){
+    if (foundDependencies.depencencyManifest.length > 0) {
         //if we're publishing in public registry, all dependencies must be in public registry, not private
         //if we're publishing to private registry, registry address match
         foundDependencies.depencencyManifest.forEach(o => {
             const dependencyManifest = o.manifest;
-            if(dependencyManifest.registry && dependencyManifest.registry.address){
-                if(registryInstance.getRegistryType() === 'public'){
+            if (dependencyManifest.registry && dependencyManifest.registry.address) {
+                if (registryInstance.getRegistryType() === 'public') {
                     throw new Error(`Dependency with package "${dependencyManifest.name}" in private registry not allowed.`);
-                }else{
-                    if(registryInstance.getAddress() !== dependencyManifest.registry.address){
+                } else {
+                    if (registryInstance.getAddress() !== dependencyManifest.registry.address) {
                         throw new Error(`Dependency with package "${dependencyManifest.name}" in different registry not allowed.`);
                     }
                 }
-            }else{
-                if(registryInstance.getRegistryType() === 'public' && dependencyManifest.private){
+            } else {
+                if (registryInstance.getRegistryType() === 'public' && dependencyManifest.private) {
                     throw new Error(`Dependency with private package "${dependencyManifest.name}" not allowed.`);
                 }
             }
@@ -245,16 +253,16 @@ module.exports = async (args) => {
 
     const ns = getPackageNamespace(devclass);
     var trkorr;
-    if(generatedManifest){
+    if (generatedManifest) {
         trkorr = await getObjLockTransport(rfcClient, {
             pgmid: 'R3TR',
             object: generatedManifest.adtObject['adtcore:type'].substring(0, 4),
             objName: generatedManifest.adtObject['adtcore:name']
         });
-    }else{
+    } else {
         trkorr = await getImportTrkorr(rfcClient, ns, packageName, version, registryInstance.getAddress(), true);
     }
-    if(ns !== '$' && !trkorr){
+    if (ns !== '$' && !trkorr) {
         const trkorrResponse = await inquirer.prompt([{
             type: "input",
             message: "Insert trkorr for manifest generation",
@@ -271,7 +279,7 @@ module.exports = async (args) => {
             packageName,
             registryAddress: registryInstance.getAddress()
         });
-        if(!trkorr){
+        if (!trkorr) {
             throw new Error('Invalid transport request.');
         }
     }
@@ -313,14 +321,14 @@ module.exports = async (args) => {
     //create or update manifest object
     //we also create the manifest object in this stage because we need to be able to transport this to targets
     logger.loading("Updating manifest...");
-    if(generatedManifest){
+    if (generatedManifest) {
         await updateManifest({
             connection,
             trkorr,
             registryAddress: registryInstance.getAddress(),
             manifest: generatedManifest
         });
-    }else{
+    } else {
         await createNewManifest({
             connection,
             trkorr,

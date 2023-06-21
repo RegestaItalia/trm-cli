@@ -70,6 +70,7 @@ module.exports = async (connection, args) => {
         allManifests = await getAll(adtClient);
     }
     for (const dependencyObject of dependencyObjects) {
+        var skip = false;
         var manifest;
         var depObjDevclass;
         const tadirEntry = await getTadirEntry(rfcClient, {
@@ -78,7 +79,7 @@ module.exports = async (connection, args) => {
             objName: dependencyObject.objName
         });
         depObjDevclass = tadirEntry.devclass;
-        while (depObjDevclass) {
+        while (depObjDevclass && !skip) {
             manifest = allManifests.find(o => o.adtObject['adtcore:packageName'] === depObjDevclass);
             if (manifest) {
                 depObjDevclass = null;
@@ -87,19 +88,22 @@ module.exports = async (connection, args) => {
                     devclass: depObjDevclass
                 });
                 depObjDevclass = tdevc.parentcl;
+                skip = tdevc.pdevclass === 'SAP';
             }
         }
-        if(!manifest){
-            //avoid duplicates, one object per devclass
-            if(!ret.missingManifest.find(o => o.devclass === tadirEntry.devclass)){
-                logger.error(`Dependency with object in package ${tadirEntry.devclass}, manifest not found.`);
-                ret.missingManifest.push(tadirEntry);
-            }
-        }else{
-            //avoid duplicates, one object per manifest
-            if(!ret.depencencyManifest.find(o => o.adtObject['adtcore:packageName'] === manifest.adtObject['adtcore:packageName'])){
-                logger.info(`Found dependency with package ${manifest.manifest.name}`);
-                ret.depencencyManifest.push(manifest);
+        if(!skip){
+            if(!manifest){
+                //avoid duplicates, one object per devclass
+                if(!ret.missingManifest.find(o => o.devclass === tadirEntry.devclass)){
+                    logger.error(`Dependency with object in package ${tadirEntry.devclass}, manifest not found.`);
+                    ret.missingManifest.push(tadirEntry);
+                }
+            }else{
+                //avoid duplicates, one object per manifest
+                if(!ret.depencencyManifest.find(o => o.adtObject['adtcore:packageName'] === manifest.adtObject['adtcore:packageName'])){
+                    logger.info(`Found dependency with package ${manifest.manifest.name}`);
+                    ret.depencencyManifest.push(manifest);
+                }
             }
         }
     }
