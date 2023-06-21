@@ -17,7 +17,7 @@ module.exports = async (connection, args) => {
     //const version = manifest.version;
     const version = args.version;
     const target = args.trTarget;
-    const transportDescription = `TRM: ${packageName} v${version}`;
+    const transportDescription = `@X1@TRM: ${packageName} v${version}`;
 
     //artifact.addFile(`manifest.json`, JSON.stringify(manifest, null, 2), "manifest");
 

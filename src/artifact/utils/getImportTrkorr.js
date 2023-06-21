@@ -12,7 +12,7 @@ module.exports = async (rfcClient, ns, packageName, version, registryAddress, sk
             packageName,
             registryAddress
         });
-        const importTrkorrDesc = `TRM: ${packageName} v${version}`;
+        const importTrkorrDesc = `@X1@TRM: ${packageName} v${version}`;
         if (!importTrkorr) {
             if(!skipGenerate){
                 importTrkorr = await createImportTransport(rfcClient, {
