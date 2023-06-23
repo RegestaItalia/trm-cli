@@ -16,6 +16,8 @@ module.exports = (e) => {
                     message = e.response.statusText;
                 }
                 return `TRM Registry error: ${message}`;
+            }else{
+                return e.toString();
             }
         } catch (err) {
             return err.toString();
