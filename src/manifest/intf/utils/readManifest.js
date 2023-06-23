@@ -16,6 +16,7 @@ module.exports = async (objName, adtClient) => {
     const name = _getStringConstantValue(source, 'name');
     const version = _getStringConstantValue(source, 'version');
     const description = _getStringConstantValue(source, 'description');
+    const website = _getStringConstantValue(source, 'website');
     const gitRepository = _getStringConstantValue(source, 'git_repository');
     const authors = _getStringConstantValue(source, 'authors');
     const keywords = _getStringConstantValue(source, 'keywords');
@@ -25,6 +26,7 @@ module.exports = async (objName, adtClient) => {
         name,
         version,
         description,
+        website,
         gitRepository,
         authors,
         keywords,

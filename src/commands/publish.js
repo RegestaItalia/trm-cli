@@ -86,6 +86,9 @@ module.exports = async (args) => {
         if (args.hasOwnProperty('description')) {
             packageDefaults.description = args.description;
         }
+        if (args.hasOwnProperty('website')) {
+            packageDefaults.gitRepository = args.website;
+        }
         if (args.hasOwnProperty('repoUrl')) {
             packageDefaults.gitRepository = args.repoUrl;
         }
@@ -139,6 +142,11 @@ module.exports = async (args) => {
         message: "Package short description",
         name: "description",
         default: packageDefaults.description
+    }, {
+        type: "input",
+        message: "Website",
+        name: "website",
+        default: packageDefaults.website
     }, {
         type: "input",
         message: "Package Git repository",
