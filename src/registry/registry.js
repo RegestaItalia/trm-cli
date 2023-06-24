@@ -73,6 +73,7 @@ module.exports = (registry) => {
             formData.append('private', args.private.toString());
             formData.append('distPath', args.distPath);
             formData.append('shortDescription', args.description || '');
+            formData.append('website', args.website || '');
             formData.append('git', args.gitRepository || '');
             formData.append('authors', args.authors ? args.authors.join(', ') : '');
             formData.append('keywords', args.keywords ? JSON.stringify(args.keywords) : '[]');
