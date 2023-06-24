@@ -32,7 +32,7 @@ module.exports = async (args) => {
 
     logger.loading("Retrieving data...");
     const allManifests = await getAll(adtClient);
-    const generatedManifest = allManifests.find(o => {
+    var generatedManifest = allManifests.find(o => {
         if (o.manifest.name === packageName) {
             if (o.manifest.registry && o.manifest.registry.address) {
                 if (registryInstance.getAddress() === o.manifest.registry.address) {
@@ -73,6 +73,8 @@ module.exports = async (args) => {
         if (generatedManifest) {
             if(!version){
                 version = generatedManifest.manifest.version;
+            }else{
+                generatedManifest.manifest.version = version;
             }
             packageDefaults = generatedManifest.manifest;
         }
