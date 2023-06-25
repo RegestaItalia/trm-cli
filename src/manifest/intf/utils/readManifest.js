@@ -10,6 +10,16 @@ const _getStringConstantValue = (source, constantName) => {
     }
 }
 
+const _getFlagConstantValue = (source, constantName) => {
+    const regex = new RegExp(`CONSTANTS\\s*${constantName}\\s*TYPE\\s*flag\\s*VALUE\\s*'(.*)'\\.$`, 'gmi');
+    try{
+        const matches = regex.exec(source);
+        return matches[1] === 'X' ? true : false;
+    }catch(e){
+        //
+    }
+}
+
 module.exports = async (objName, adtClient) => {
     const url = getObjUrl(objName);
     const source = await adtClient.getObjectSource(url + '/source/main?version=workingArea');
@@ -21,6 +31,7 @@ module.exports = async (objName, adtClient) => {
     const authors = _getStringConstantValue(source, 'authors');
     const keywords = _getStringConstantValue(source, 'keywords');
     const license = _getStringConstantValue(source, 'license');
+    const private = _getFlagConstantValue(source, 'private');
 
     return {
         name,
@@ -30,6 +41,7 @@ module.exports = async (objName, adtClient) => {
         gitRepository,
         authors,
         keywords,
-        license
+        license,
+        private
     };
 }

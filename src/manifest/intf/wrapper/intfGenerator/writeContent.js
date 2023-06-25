@@ -17,8 +17,10 @@ module.exports = (intfName, content) => {
     var aSourceCode = [
         `INTERFACE ${intfName.toLowerCase()}`,
         `  PUBLIC .`,
-        `  CONSTANTS is_trm_manifest TYPE flag VALUE 'X'.`
-    ]
+        `  CONSTANTS is_trm_manifest TYPE flag VALUE 'X'.`,
+        `  CONSTANTS private TYPE flag VALUE '${content.private ? 'X' : ' '}'.`
+    ];
+    delete content.private;
     aSourceCode = _buildSourceCode(aSourceCode, content);
     aSourceCode.push(`ENDINTERFACE.`);
 

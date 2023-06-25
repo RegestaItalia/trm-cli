@@ -225,6 +225,7 @@ module.exports = async (args) => {
         packageManifest = await inquirer.prompt(manifestPrompt);
         packageManifest.name = packageName;
         packageManifest.version = version;
+        packageManifest.private = private;
         packageManifest = validateManifest(packageManifest);
     }
 
@@ -332,6 +333,7 @@ module.exports = async (args) => {
     //we also create the manifest object in this stage because we need to be able to transport this to targets
     logger.loading("Updating manifest...");
     if (generatedManifest) {
+        generatedManifest.manifest.private = private;
         await updateManifest({
             connection,
             trkorr,
