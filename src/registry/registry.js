@@ -6,8 +6,6 @@ const FormData = require('form-data');
 module.exports = (registry) => {
     var axiosOptions;
     var usePublicRegistry = registry.name === 'public';
-    const token = `${registry.username}:${registry.password}`;
-    const encodedToken = Buffer.from(token).toString('base64');
     var baseUrl;
     if (usePublicRegistry) {
         baseUrl = process.env.TRM_PUBLIC_REGISTRY_ENDPOINT || 'https://trmregistry.regestaitalia.it/registry';
@@ -20,11 +18,18 @@ module.exports = (registry) => {
     if(!baseUrl){
         throw new Error(`Registry url was not specified.`);
     }
+
+    var axiosHeaders = {};
+    var hasAuthentication = registry.username && registry.password;
+    if(hasAuthentication){
+        const token = `${registry.username}:${registry.password}`;
+        const encodedToken = Buffer.from(token).toString('base64');
+        axiosHeaders['Authorization'] = `Basic ${encodedToken}`;
+    }
+
     axiosOptions = {
         baseURL: baseUrl.trim(),
-        headers: {
-            'Authorization': `Basic ${encodedToken}`
-        }
+        headers: axiosHeaders
     };
     const axiosInstance = axios.create(axiosOptions);
 
@@ -37,6 +42,17 @@ module.exports = (registry) => {
         },
         getAddress: () => {
             return usePublicRegistry ? 'public' : normalizeUrl(axiosOptions.baseURL);
+        },
+        hasAuthentication: () => {
+            return hasAuthentication;
+        },
+        ping: async () => {
+            try{
+                const response = (await axiosInstance.get('/')).data;
+                return response;
+            }catch(e){
+                throw new Error('Registry cannot be reached.')
+            }
         },
         logon: async () => {
             const response = (await axiosInstance.get('/whoami')).data;
