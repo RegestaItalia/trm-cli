@@ -40,13 +40,21 @@ module.exports = async(args) => {
     logger.success(`Registry "${registryName}" saved.`);
 
     //auth
-    const answer = await inquirer.prompt([{
-        type: "confirm",
-        message: "Do you want to login?",
-        name: "login",
-        default: true
-    }]);
-    if(answer.login){
-        await authRegistry(registryName);
+    var login;
+    const username = args.username;
+    const password = args.password;
+    if(!username && !password){
+        const answer = await inquirer.prompt([{
+            type: "confirm",
+            message: "Do you want to login?",
+            name: "login",
+            default: true
+        }]);
+        login = answer.login;
+    }else{
+        login = true;
+    }
+    if(login){
+        await authRegistry(registryName, username, password);
     }
 }

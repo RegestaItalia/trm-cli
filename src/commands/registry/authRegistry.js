@@ -4,7 +4,7 @@ const { registry } = require('../../registry');
 const printMessage = require('./printMessage');
 const Logger = require('../../logger');
 
-module.exports = async (registryName) => {
+module.exports = async (registryName, username, password) => {
     const logger = Logger.getInstance();
     var prompts = [];
     var registryInstance;
@@ -13,25 +13,32 @@ module.exports = async (registryName) => {
     if (!registryData) {
         throw new Error(`Registry "${registryName}" not defined in ini file.`);
     }
-    prompts.push({
-        type: "input",
-        message: "Registry username",
-        name: "username",
-        validate: (inputUsername) => {
-            return inputUsername ? true : false
-        }
-    });
-    prompts.push({
-        type: "password",
-        message: registryName !== 'public' ? "Registry password" : "Registry password",
-        name: "password",
-        validate: (inputPassword) => {
-            return inputPassword ? true : false
-        }
-    });
-    const answers = await inquirer.prompt(prompts);
-    registryData.username = answers.username;
-    registryData.password = answers.password;
+    if(!username && !password){
+        prompts.push({
+            type: "input",
+            message: "Registry username",
+            name: "username",
+            default: username,
+            validate: (inputUsername) => {
+                return inputUsername ? true : false
+            }
+        });
+        prompts.push({
+            type: "password",
+            message: registryName !== 'public' ? "Registry password" : "Registry password",
+            name: "password",
+            default: password,
+            validate: (inputPassword) => {
+                return inputPassword ? true : false
+            }
+        });
+        const answers = await inquirer.prompt(prompts);
+        registryData.username = answers.username;
+        registryData.password = answers.password;
+    }else{
+        registryData.username = username;
+        registryData.password = password;
+    }
 
     registryInstance = registry(registryData);
 
