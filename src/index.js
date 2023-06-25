@@ -18,7 +18,8 @@ const listPackages = program.command('ls')
     .description('List all packages installed into system');
 
 const addRegistry = program.command('addRegistry <name>')
-    .description('Add a new registry');
+    .description('Add a new registry')
+    .option('-a, --address <address>', 'Registry address', undefined);
 
 const profile = program.command('profile')
     .description('Change user profile parameter for registry');

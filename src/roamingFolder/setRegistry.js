@@ -16,7 +16,8 @@ module.exports = (registry) => {
     if(arrayIndex >= 0){
         registryList[arrayIndex] = registry;
     }else{
-        throw new Error('Cant find registry')
+        //throw new Error('Cant find registry')
+        registryList.push(registry);
     }
     var oRegistryList = {};
     registryList.forEach(o => {
