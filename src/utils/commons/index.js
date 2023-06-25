@@ -8,7 +8,6 @@ module.exports = {
     xmlToJs: require('./xmlToJs'),
     getFileSysSeparator: require('./getFileSysSeparator'),
     getTrmVersion: require('./getTrmVersion'),
-    getTrmServerVersion: require('./getTrmServerVersion'),
     parseError: require('./parseError'),
     normalizeUrl: require('./normalizeUrl'),
     getPackageNamespace: require('./getPackageNamespace')

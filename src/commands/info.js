@@ -1,5 +1,6 @@
-const { getTrmVersion, getTrmServerVersion } = require('../utils/commons');
+const { getTrmVersion } = require('../utils/commons');
 const Logger = require('../logger');
+const { getAll } = require('../manifest/utils')
 
 module.exports = async(args) => {
     const connection = args.connection;
@@ -9,12 +10,12 @@ module.exports = async(args) => {
     logger.loading("Retreiving infos...");
 
     const trmClientVersion = getTrmVersion();
-    const trmServerVersion = await getTrmServerVersion(adtClient);
-    console.log(`TRM Client version: ${trmClientVersion}`);
-    if(trmServerVersion){
-        console.log(`TRM Server version: ${trmServerVersion}`);
-        logger.success('Done');
-    }else{
+    const allManifests = await getAll(adtClient);
+    const serverManifest = allManifests.find(o => o.manifest.name === 'trm-server');
+    if(!serverManifest || !serverManifest.manifest.version){
         logger.warning(`TRM Server is not installed on ${args.connection.client.dest}`);
+    }else{
+        logger.info(`TRM Server version: ${serverManifest.manifest.version}`);
     }
+    logger.info(`TRM Client version: ${trmClientVersion}`);
 }
