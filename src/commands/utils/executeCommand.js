@@ -1,8 +1,10 @@
 const { getAliasConnection, getConnection } = require("../../connection");
 const commands = require('..');
-const { authRegistry } = require('../registry');
+const { pickRegistry, printMessage } = require('../registry');
 const { parseError } = require('../../utils/commons');
-const Logger = require('../../logger')
+const Logger = require('../../logger');
+const { getRegistryList } = require("../../roamingFolder");
+const { registry } = require("../../registry");
 
 module.exports = async (args) => {
     const logger = Logger.getInstance();
@@ -11,7 +13,7 @@ module.exports = async (args) => {
         throw new Error('Command not specified');
     }
     var connection;
-    var registry;
+    var registryData;
     if (!args.skipConnection) {
         var client = {
             dest: args.dest,
@@ -41,13 +43,31 @@ module.exports = async (args) => {
     } else {
         connection = null;
     }
-    if(!args.skipRegistry && args.registry){
-        registry = await authRegistry(args.registry);
+    if(!args.skipRegistry){
+        var registryName = args.registry;
+        const registryList = getRegistryList();
+        if(registryName){
+            registryData = registryList.find(o => o.name === registryName);
+            if (!registryData) {
+                throw new Error(`Registry "${registryName}" not defined in ini file.`);
+            }
+        }else{
+            if(registryList.length === 1){
+                registryData = registryList[0];
+            }else{
+                registryData = await pickRegistry(registryList);
+            }
+        }
+        const registryInstance = registry(registryData);
+        const ping = await registryInstance.ping();
+        if(ping.wallMessage){
+            printMessage(ping.wallMessage);
+        }
     }else{
-        registry = null;
+        registryData = null;
     }
     commandArgs.connection = connection;
-    commandArgs.registryData = registry;
+    commandArgs.registryData = registryData;
     var exitCode;
     try{
         await commands[args.command]({ ...commandArgs, ...args });

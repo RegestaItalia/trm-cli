@@ -20,7 +20,7 @@ module.exports = (command, args) => {
         }
     }
     if(!args.skipRegistry){
-        command.option('-r, --registry <registry>', 'Package registry', 'public');
+        command.option('-r, --registry <registry>', 'Package registry, defaults to public ');
     }
     command.option('-log, --log-type', 'Log type', 'cli');
 

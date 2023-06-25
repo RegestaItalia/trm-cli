@@ -6,14 +6,15 @@ const { authRegistry, printMessage } = require('./registry');
 module.exports = async(args) => {
     const registryData = args.registryData;
     const registryInstance = registry(registryData);
+    const ping = await registryInstance.ping();
     const logonData = await registryInstance.logon();
     console.log(`Registry: ${registryInstance.getName()}`);
     console.log(`Type: ${registryInstance.getRegistryType()}`);
     if(registryInstance.getRegistryType() === 'private'){
         console.log(`Registry address: ${registryInstance.getAddress()}`);
     }
-    if(logonData.wallMessage){
-        printMessage(logonData.wallMessage);
+    if(ping.logonMessage){
+        printMessage(ping.logonMessage);
     }
     console.log(`Username: ${logonData.username}`);
     console.log(`Password: *** (saved)`);
@@ -24,6 +25,6 @@ module.exports = async(args) => {
         default: false
     }]);
     if(answers.changeLogonData){
-        await authRegistry(args.registryData.name, true);
+        await authRegistry(args.registryData.name);
     }
 }

@@ -7,5 +7,6 @@ module.exports = {
     profile: require('./profile'),
     info: require('./info'),
     install: require('./install'),
-    explore: require('./explore')
+    explore: require('./explore'),
+    addRegistry: require('./addRegistry')
 }

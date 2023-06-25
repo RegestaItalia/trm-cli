@@ -16,7 +16,8 @@ const _buildSourceCode = (aSourceCode, object, keyPrefix) => {
 module.exports = (intfName, content) => {
     var aSourceCode = [
         `INTERFACE ${intfName.toLowerCase()}`,
-        `  PUBLIC .`
+        `  PUBLIC .`,
+        `  CONSTANTS is_trm_manifest TYPE flag VALUE 'X'.`
     ]
     aSourceCode = _buildSourceCode(aSourceCode, content);
     aSourceCode.push(`ENDINTERFACE.`);
