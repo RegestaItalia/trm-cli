@@ -17,6 +17,11 @@ const createAlias = program.command('createAlias')
 const listPackages = program.command('ls')
     .description('List all packages installed into system');
 
+const login = program.command('login')
+    .description('Login to registry')
+    .option('-u, --username <username>', 'Registry username', undefined)
+    .option('-p, --password <password>', 'Registry password', undefined);
+
 const addRegistry = program.command('addRegistry <name>')
     .description('Add a new registry')
     .option('-a, --address <address>', 'Registry address', undefined)
@@ -32,7 +37,7 @@ const viewPackage = program.command('view <name>')
     .option('-dc, --dependencies-check', 'Check dependencies', true);
 
 const publish = program.command('publish <package>')
-    .description('Publish package to repository')
+    .description('Publish package to registry')
     .option('-d, --devclass <devclass>', 'System devclass name. Defaults to latest used', undefined)
     .option('-v, --version <version>', 'Version to publish. Defaults to 0.0.1 if published fot the first time or increases patch number of latest release', undefined)
     .option('-t, --target <target>', 'TMS Target', undefined)
@@ -45,8 +50,12 @@ const publish = program.command('publish <package>')
     .option('-pl, --package-license <license>', 'Package license', undefined)
     .option('-mdb, --missing-dependency-bypass', 'Bypass abort with missing dependency ', false)
 
+const unpublish = program.command('unpublish <package>')
+    .description('Remove a package and all its releases (or specific version) from registry')
+    .option('-v, --version <version>', 'Version to remove. If none is specified, all versions will be removed.', undefined);
+
 const install = program.command('install <package>')
-    .description('Install package to system')
+    .description('Install package from registry to system')
     .option('-v, --version <version>', 'Package version to install', 'latest')
     .option('-rs, --requirements-check', 'Check requirements', true)
     .option('-vc, --version-check', 'Compare installed version', true);
@@ -79,7 +88,15 @@ registerCommand(profile, {
     skipConnection: true
 });
 
+registerCommand(login, {
+    skipConnection: true
+});
+
 registerCommand(publish);
+
+registerCommand(unpublish, {
+    skipConnection: true
+});
 
 registerCommand(install);
 

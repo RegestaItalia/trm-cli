@@ -3,7 +3,7 @@ const inquirer = require("inquirer");
 const { authRegistry, printMessage } = require('./registry');
 
 
-module.exports = async(args) => {
+module.exports = async(args, changeLogonData) => {
     const registryData = args.registryData;
     const registryInstance = registry(registryData);
     const ping = await registryInstance.ping();
@@ -22,7 +22,7 @@ module.exports = async(args) => {
         type: "confirm",
         message: "Change logon data?",
         name: "changeLogonData",
-        default: false
+        default: changeLogonData
     }]);
     if(answers.changeLogonData){
         await authRegistry(args.registryData.name);

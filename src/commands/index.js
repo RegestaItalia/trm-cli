@@ -8,5 +8,7 @@ module.exports = {
     info: require('./info'),
     install: require('./install'),
     explore: require('./explore'),
-    addRegistry: require('./addRegistry')
+    addRegistry: require('./addRegistry'),
+    login: require('./login'),
+    unpublish: require('./unpublish')
 }

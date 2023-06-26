@@ -110,6 +110,13 @@ module.exports = (registry) => {
                 responseType: 'arraybuffer'
             })).data;
             return response;
+        },
+        unpublish: async(packageName, version) => {
+            const response = (await axiosInstance.post('/unpublish', {
+                name: packageName,
+                version
+            })).data;
+            return response;
         }
     }
 }
