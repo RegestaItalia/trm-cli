@@ -333,7 +333,7 @@ module.exports = async (args) => {
     //we also create the manifest object in this stage because we need to be able to transport this to targets
     logger.loading("Updating manifest...");
     if (generatedManifest) {
-        generatedManifest.manifest.private = private;
+        generatedManifest.manifest = packageManifest;
         await updateManifest({
             connection,
             trkorr,
