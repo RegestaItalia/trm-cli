@@ -13,31 +13,31 @@ const getImportTrkorr = require('../artifact/utils/getImportTrkorr');
 const getManifestValues = (args) => {
     var packageDefaults = {};
 
-    if (args.hasOwnProperty('description')) {
-        packageDefaults.description = args.description;
+    if (args.hasOwnProperty('packageDescription')) {
+        packageDefaults.description = args.packageDescription;
     }
-    if (args.hasOwnProperty('website')) {
-        packageDefaults.gitRepository = args.website;
+    if (args.hasOwnProperty('packageWebsite')) {
+        packageDefaults.gitRepository = args.packageWebsite;
     }
-    if (args.hasOwnProperty('repoUrl')) {
-        packageDefaults.gitRepository = args.repoUrl;
+    if (args.hasOwnProperty('packageGitRepository')) {
+        packageDefaults.gitRepository = args.packageGitRepository;
     }
-    if (args.hasOwnProperty('authors')) {
+    if (args.hasOwnProperty('packageAuthors')) {
         try {
-            packageDefaults.authors = args.authors.split(',');
+            packageDefaults.authors = args.packageAuthors.split(',');
         } catch (e) {
             packageDefaults.authors = [];
         }
     }
-    if (args.hasOwnProperty('keywords')) {
+    if (args.hasOwnProperty('packageKeywords')) {
         try {
-            packageDefaults.keywords = args.keywords.split(',');
+            packageDefaults.keywords = args.packageKeywords.split(',');
         } catch (e) {
             packageDefaults.keywords = [];
         }
     }
-    if (args.hasOwnProperty('license')) {
-        packageDefaults.license = args.license;
+    if (args.hasOwnProperty('packageLicense')) {
+        packageDefaults.license = args.packageLicense;
     }
     return packageDefaults;
 }
@@ -52,9 +52,9 @@ module.exports = async (args) => {
     const registryInstance = registry(registryData);
 
     var askPrivate;
-    var askManifest;
     var private;
     var version;
+    var packageManifest;
     if (packageName.length > 100) {
         throw new Error("Package name maximum length is 100");
     }
@@ -84,12 +84,11 @@ module.exports = async (args) => {
     try {
         const packageView = await registryInstance.view(packageName, 'latest');
         if (packageView.userAuthorizations.canCreateReleases) {
-            askManifest = false;
             askPrivate = false;
             private = packageView.private;
-            if(args.forceManifest){
+            if (args.forceManifest) {
                 packageDefaults = getManifestValues(args);
-            }else{
+            } else {
                 packageDefaults.description = packageView.shortDescription;
                 packageDefaults.gitRepository = packageView.git;
                 packageDefaults.authors = packageView.authors;
@@ -106,23 +105,27 @@ module.exports = async (args) => {
         if (keepError) {
             throw keepError;
         }
-        if (generatedManifest) {
-            if(!version){
-                version = generatedManifest.manifest.version;
-            }else{
-                generatedManifest.manifest.version = version;
-            }
-            packageDefaults = generatedManifest.manifest;
-        }else{
-            packageDefaults = getManifestValues(args);
-        }
-
         if (args.hasOwnProperty('packagePrivate')) {
             private = args.packagePrivate;
         } else {
             askPrivate = true;
         }
-        askManifest = true;
+        if (generatedManifest) {
+            if (!version) {
+                version = generatedManifest.manifest.version;
+            } else {
+                generatedManifest.manifest.version = version;
+            }
+            packageDefaults = generatedManifest.manifest;
+        } else {
+            packageDefaults = getManifestValues(args);
+            if (!args.forceManifestInput) {
+                packageDefaults.name = packageName;
+                packageDefaults.version = version;
+                packageDefaults.private = private;
+                packageManifest = validateManifest(packageDefaults);
+            }
+        }
         logger.success(`Package "${packageName}" not yet published. Congratulations!`);
     }
     if (!version) {
@@ -132,7 +135,11 @@ module.exports = async (args) => {
         version = validateSem(version);
     }
 
-    packageDefaults.devclass = generatedManifest ? generatedManifest.adtObject['adtcore:packageName'] : undefined;
+    if(args.devclass){
+        packageDefaults.devclass = args.devclass;
+    }else{
+        packageDefaults.devclass = generatedManifest ? generatedManifest.adtObject['adtcore:packageName'] : undefined;
+    }
 
     const requiredPrompt1 = [{
         type: "input",
@@ -182,7 +189,12 @@ module.exports = async (args) => {
         default: packageDefaults.license
     }];
 
-    const requiredAnswers1 = await inquirer.prompt(requiredPrompt1);
+    var requiredAnswers1 = {};
+    if (args.hasOwnProperty('devclass')) {
+        requiredAnswers1.devclass = args.devclass;
+    } else {
+        requiredAnswers1 = await inquirer.prompt(requiredPrompt1);
+    }
 
     const devclass = requiredAnswers1.devclass.trim().toUpperCase();
     if (publishedPackage && publishedPackage.devclass !== devclass) {
@@ -224,15 +236,18 @@ module.exports = async (args) => {
             default: false
         });
     }
-
-    const requiredAnswers2 = await inquirer.prompt(requiredPrompt2);
+    var requiredAnswers2 = {};
+    if (args.target) {
+        requiredAnswers2.trTarget = args.target;
+    } else {
+        requiredAnswers2 = await inquirer.prompt(requiredPrompt2);
+    }
     if (askPrivate) {
         private = requiredAnswers2.private;
     }
 
     //ask manifest infos only if first ever publish or packageSip is false and previous values were retrieved
-    var packageManifest;
-    if (askManifest) {
+    if (!args.skipManifestInput) {
         packageManifest = await inquirer.prompt(manifestPrompt);
         packageManifest.name = packageName;
         packageManifest.version = version;
@@ -275,14 +290,32 @@ module.exports = async (args) => {
 
     const ns = getPackageNamespace(devclass);
     var trkorr;
-    if (generatedManifest) {
-        trkorr = await getObjLockTransport(rfcClient, {
-            pgmid: 'R3TR',
-            object: generatedManifest.adtObject['adtcore:type'].substring(0, 4),
-            objName: generatedManifest.adtObject['adtcore:name']
+    if (args.manifestTrkorr) {
+        trkorr = args.manifestTrkorr;
+        logger.loading("Checking transport request...");
+        await setArtifactTrkorr(rfcClient, {
+            packageName,
+            registryAddress: registryInstance.getAddress(),
+            trkorr
         });
+        //after write get it back, this is to check tr actually exists
+        trkorr = await getArtifactTrkorr(rfcClient, {
+            packageName,
+            registryAddress: registryInstance.getAddress()
+        });
+        if (!trkorr) {
+            throw new Error('Invalid transport request.');
+        }
     } else {
-        trkorr = await getImportTrkorr(rfcClient, ns, packageName, version, registryInstance.getAddress(), true);
+        if (generatedManifest) {
+            trkorr = await getObjLockTransport(rfcClient, {
+                pgmid: 'R3TR',
+                object: generatedManifest.adtObject['adtcore:type'].substring(0, 4),
+                objName: generatedManifest.adtObject['adtcore:name']
+            });
+        } else {
+            trkorr = await getImportTrkorr(rfcClient, ns, packageName, version, registryInstance.getAddress(), !args.skipManifestInput);
+        }
     }
     if (ns !== '$' && !trkorr) {
         const trkorrResponse = await inquirer.prompt([{
