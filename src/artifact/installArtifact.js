@@ -97,7 +97,8 @@ module.exports = async (args) => {
                         ...args,
                         ...{
                             arg1: dependency.name,
-                            version: dependency.version
+                            version: dependency.version,
+                            installingDependency: true
                         }
                     });
                 }
@@ -209,24 +210,46 @@ module.exports = async (args) => {
         var ns;
         var packagePrompts = [];
         var packagesToGenerate = [];
+        var packageAnswers = {};
+
+        const validatePromptInputPackage = async(inputDevclass) => {
+            const finalInputDevclass = inputDevclass || package;
+            validatePackage = await validateInputPackage(adtClient, finalInputDevclass, ns);
+            if (validatePackage.valid === 0) {
+                if (!ns) {
+                    ns = getPackageNamespace(finalInputDevclass);
+                }
+            }
+            return validatePackage;
+        }
+
         for (const package of packages) {
             var validatePackage = await validateInputPackage(adtClient, package, ns);
             if (!packageMap[package] || validatePackage.valid !== 4) {
-                packagePrompts.push({
-                    type: "input",
-                    message: `Package ${package} will be generated. Input a new name or press enter to keep it as is`,
-                    name: package,
-                    validate: async (inputDevclass) => {
-                        const finalInputDevclass = inputDevclass || package;
-                        validatePackage = await validateInputPackage(adtClient, finalInputDevclass, ns);
-                        if (validatePackage.valid === 0) {
-                            if (!ns) {
-                                ns = getPackageNamespace(finalInputDevclass);
-                            }
+                var defaultPackageValue;
+                if(args.packageMap && !args.installingDependency){
+                    defaultPackageValue = args.packageMap[package];
+                }
+                if(defaultPackageValue){
+                    const defaultPackageValueValid = await validatePromptInputPackage(defaultPackageValue);
+                    if(defaultPackageValueValid.valid !== 4){
+                        if(defaultPackageValueValid.valid === 0){
+                            packageAnswers[package] = defaultPackageValue;
+                        }else{
+                            throw new Error(`Package ${defaultPackageValue}: ${defaultPackageValueValid}`);
                         }
-                        return validatePackage.inquirerReturn;
                     }
-                });
+                }else{
+                    packagePrompts.push({
+                        type: "input",
+                        message: `Package ${package} will be generated. Input a new name or press enter to keep it as is`,
+                        name: package,
+                        validate: async(inputDevclass) => {
+                            const r = await validatePromptInputPackage(inputDevclass);
+                            return r.inquirerReturn;
+                        }
+                    });
+                }
             } else {
                 if (!ns) {
                     ns = getPackageNamespace(package);
@@ -234,15 +257,16 @@ module.exports = async (args) => {
             }
         }
         if (packagePrompts.length > 0) {
-            var packageAnswers = await inquirer.prompt(packagePrompts);
-            Object.keys(packageAnswers).forEach(k => {
-                if (!packageAnswers[k]) {
-                    packageAnswers[k] = k;
-                }
-                packagesToGenerate.push(packageAnswers[k]);
-            })
-            packageMap = { ...packageMap, ...packageAnswers };
+            const promptPackageAnswers = await inquirer.prompt(packagePrompts);
+            packageAnswers = {...packageAnswers, promptPackageAnswers};
         }
+        Object.keys(packageAnswers).forEach(k => {
+            if (!packageAnswers[k]) {
+                packageAnswers[k] = k;
+            }
+            packagesToGenerate.push(packageAnswers[k]);
+        });
+        packageMap = { ...packageMap, ...packageAnswers };
     
         //update the table containing originalPackage -> installPackage
         logger.loading('Updating package install values...');
