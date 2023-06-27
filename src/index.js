@@ -68,8 +68,7 @@ registerCommand(info, {
 });
 
 registerCommand(createAlias, {
-    skipCreateAlias: true,
-    skipUseAlias: true,
+    skipConnection: true,
     skipRegistry: true
 });
 

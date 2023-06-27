@@ -11,18 +11,20 @@ module.exports = async (args) => {
     const aliases = getAliases();
     const systems = await getConnections();
     var choices = [];
-    if (aliases.length > 0) {
-        choices.push(new inquirer.Separator('----Alias----'));
-    }
-    aliases.forEach(alias => {
-        choices.push({
-            name: alias.name,
-            value: {
-                type: 'ALIAS',
-                id: alias.name
-            }
+    if(!args.avoidAlias){
+        if (aliases.length > 0) {
+            choices.push(new inquirer.Separator('----Alias----'));
+        }
+        aliases.forEach(alias => {
+            choices.push({
+                name: alias.name,
+                value: {
+                    type: 'ALIAS',
+                    id: alias.name
+                }
+            });
         });
-    });
+    }
     if (choices.length > 0) {
         choices.push(new inquirer.Separator('---Systems---'));
     }

@@ -9,7 +9,8 @@ module.exports = async(args) => {
     }
     if(!client.dest || !client.user || !client.passwd || !client.client || !client.lang || !client.ashost || !client.sysnr){
         const connection = await pickSystem({
-            skipCreateAlias: true
+            skipCreateAlias: true,
+            avoidAlias: true
         });
         client = connection.client;
     }
