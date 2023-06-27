@@ -10,6 +10,38 @@ const findDependencies = require('../artifact/findDependencies');
 const { getPackageNamespace } = require('../utils/commons');
 const getImportTrkorr = require('../artifact/utils/getImportTrkorr');
 
+const getManifestValues = (args) => {
+    var packageDefaults = {};
+
+    if (args.hasOwnProperty('description')) {
+        packageDefaults.description = args.description;
+    }
+    if (args.hasOwnProperty('website')) {
+        packageDefaults.gitRepository = args.website;
+    }
+    if (args.hasOwnProperty('repoUrl')) {
+        packageDefaults.gitRepository = args.repoUrl;
+    }
+    if (args.hasOwnProperty('authors')) {
+        try {
+            packageDefaults.authors = args.authors.split(',');
+        } catch (e) {
+            packageDefaults.authors = [];
+        }
+    }
+    if (args.hasOwnProperty('keywords')) {
+        try {
+            packageDefaults.keywords = args.keywords.split(',');
+        } catch (e) {
+            packageDefaults.keywords = [];
+        }
+    }
+    if (args.hasOwnProperty('license')) {
+        packageDefaults.license = args.license;
+    }
+    return packageDefaults;
+}
+
 module.exports = async (args) => {
     const connection = args.connection;
     const packageName = args.arg1;
@@ -55,11 +87,15 @@ module.exports = async (args) => {
             askManifest = false;
             askPrivate = false;
             private = packageView.private;
-            packageDefaults.description = packageView.shortDescription;
-            packageDefaults.gitRepository = packageView.git;
-            packageDefaults.authors = packageView.authors;
-            packageDefaults.keywords = packageView.keywords;
-            packageDefaults.license = packageView.license;
+            if(args.forceManifest){
+                packageDefaults = getManifestValues(args);
+            }else{
+                packageDefaults.description = packageView.shortDescription;
+                packageDefaults.gitRepository = packageView.git;
+                packageDefaults.authors = packageView.authors;
+                packageDefaults.keywords = packageView.keywords;
+                packageDefaults.license = packageView.license;
+            }
             if (version && version === res.release.version) {
                 keepError = new Error(`Package "${packageName}" version ${version} already published. You can't overwrite a published package version.`);
             }
@@ -77,6 +113,8 @@ module.exports = async (args) => {
                 generatedManifest.manifest.version = version;
             }
             packageDefaults = generatedManifest.manifest;
+        }else{
+            packageDefaults = getManifestValues(args);
         }
 
         if (args.hasOwnProperty('packagePrivate')) {
@@ -85,33 +123,6 @@ module.exports = async (args) => {
             askPrivate = true;
         }
         askManifest = true;
-        if (args.hasOwnProperty('description')) {
-            packageDefaults.description = args.description;
-        }
-        if (args.hasOwnProperty('website')) {
-            packageDefaults.gitRepository = args.website;
-        }
-        if (args.hasOwnProperty('repoUrl')) {
-            packageDefaults.gitRepository = args.repoUrl;
-        }
-        if (args.hasOwnProperty('authors')) {
-            try {
-                packageDefaults.authors = args.authors.split(',');
-            } catch (e) {
-                packageDefaults.authors = [];
-            }
-        }
-        if (args.hasOwnProperty('keywords')) {
-            try {
-                packageDefaults.keywords = args.keywords.split(',');
-            } catch (e) {
-                packageDefaults.keywords = [];
-            }
-        }
-        if (args.hasOwnProperty('license')) {
-            packageDefaults.license = args.license;
-        }
-
         logger.success(`Package "${packageName}" not yet published. Congratulations!`);
     }
     if (!version) {
