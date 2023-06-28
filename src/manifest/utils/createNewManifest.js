@@ -36,7 +36,15 @@ module.exports = async(args) => {
     };
     if(useSktd){
         //generate sktd
-        await createSktd(createArgs);
+        try{
+            await createSktd(createArgs);
+        }catch(e){
+            if(e.type === 'ExceptionResourceNotFound'){
+                await createIntf(createArgs);
+            }else{
+                throw e;
+            }
+        }
     }else if(useIntf){
         //generate intf
         await createIntf(createArgs);

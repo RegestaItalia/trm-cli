@@ -14,7 +14,8 @@ module.exports = (objName, devclass, connection) => {
                 name: objName,
                 objtype: 'INTF/OI',
                 parentName: devclass,
-                parentPath: `/sap/bc/adt/packages/${devclass.toLowerCase()}`
+                parentPath: `/sap/bc/adt/packages/${devclass.toLowerCase()}`,
+                transport: trkorr
             });
         },
         lock: async () => {

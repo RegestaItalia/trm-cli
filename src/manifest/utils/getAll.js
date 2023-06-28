@@ -17,6 +17,7 @@ module.exports = async (adtClient, keepInvalid) => {
 
     var filtered = [];
     //filter results
+    //TODO if !o["adtcore:packageName"], get via fm
     allObjs.forEach(o => {
         if (o.manifest) {
             try {
