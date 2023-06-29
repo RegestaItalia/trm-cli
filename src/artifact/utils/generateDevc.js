@@ -29,11 +29,13 @@ module.exports = async(args) => {
             trkorr: trkorr,
             as4user: as4user
         });
-        await tadirInterface(rfcClient, [{
-            PGMID: 'R3TR',
-            OBJECT: 'DEVC',
-            OBJ_NAME: package,
-            GENFLAG: 'X'
-        }]);
+        if(ns !== '$'){
+            await tadirInterface(rfcClient, [{
+                PGMID: 'R3TR',
+                OBJECT: 'DEVC',
+                OBJ_NAME: package,
+                GENFLAG: 'X'
+            }]);
+        }
     }
 }
