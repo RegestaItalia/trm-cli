@@ -8,7 +8,7 @@ module.exports = (registry) => {
     var usePublicRegistry = registry.name === 'public';
     var baseUrl;
     if (usePublicRegistry) {
-        baseUrl = process.env.TRM_PUBLIC_REGISTRY_ENDPOINT || 'https://trmregistry.regestaitalia.it/registry';
+        baseUrl = process.env.TRM_PUBLIC_REGISTRY_ENDPOINT || 'https://www.trmregistry.com/registry';
     } else {
         baseUrl = registry.address;
         if (baseUrl.length > 100) {
