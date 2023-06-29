@@ -10,7 +10,7 @@ module.exports = async(args) => {
     logger.loading("Retreiving infos...");
 
     const trmClientVersion = getTrmVersion();
-    const allManifests = await getAll(adtClient);
+    const allManifests = await getAll(connection);
     const serverManifest = allManifests.find(o => o.manifest.name === 'trm-server');
     if(!serverManifest || !serverManifest.manifest.version){
         logger.warning(`TRM Server is not installed on ${args.connection.client.dest}`);

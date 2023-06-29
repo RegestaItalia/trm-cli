@@ -1,7 +1,7 @@
 const getAll = require("./getAll")
 
-module.exports = async(adtClient) => {
-    const allManifests = await getAll(adtClient, true);
+module.exports = async(connection) => {
+    const allManifests = await getAll(connection, true);
     var numerators = [0];
     allManifests.forEach(o => {
         const objName = o.adtObject['adtcore:name'];

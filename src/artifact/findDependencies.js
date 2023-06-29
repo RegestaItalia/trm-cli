@@ -67,7 +67,7 @@ module.exports = async (connection, args) => {
     //with all dependency objects, find their package
     var allManifests = [];
     if (dependencyObjects.length > 0) {
-        allManifests = await getAll(adtClient);
+        allManifests = await getAll(connection);
     }
     for (const dependencyObject of dependencyObjects) {
         var skip = false;

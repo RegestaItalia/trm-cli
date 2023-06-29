@@ -2,13 +2,13 @@ const { getAll } = require('../manifest/utils');
 const { trmDependencies } = require('../.././package.json');
 const semverSatisfies = require('semver/functions/satisfies');
 
-module.exports = async (adtClient, oTrmDependencies) => {
+module.exports = async (connection, oTrmDependencies) => {
     var oRet = {
         missingPackages: [],
         validPackages: [],
         mismatchPackages: []
     };
-    const allManifests = await getAll(adtClient);
+    const allManifests = await getAll(connection);
     if(!oTrmDependencies){
         oTrmDependencies = trmDependencies || {};
     }

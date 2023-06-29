@@ -63,7 +63,7 @@ module.exports = async (args) => {
     }
 
     logger.loading("Retrieving data...");
-    const allManifests = await getAll(adtClient);
+    const allManifests = await getAll(connection);
     var generatedManifest = allManifests.find(o => {
         if (o.manifest.name === packageName) {
             if (o.manifest.registry && o.manifest.registry.address) {

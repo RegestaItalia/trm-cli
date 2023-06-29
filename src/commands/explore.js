@@ -11,7 +11,7 @@ module.exports = async(args) => {
 
     logger.loading("Retreiving infos...");
 
-    const allManifests = await getAll(adtClient);
+    const allManifests = await getAll(connection);
     const allRegistry = getRegistryList();
     //there could be more then 1 package with the same name (different registry)
     var foundManifests = allManifests.filter(o => o.manifest.name === packageName).map(o => o.manifest);

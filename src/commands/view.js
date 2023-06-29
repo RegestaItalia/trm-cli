@@ -13,7 +13,7 @@ module.exports = async(args) => {
 
     logger.loading("Retreiving package...");
 
-    const allManifests = await getAll(adtClient);
+    const allManifests = await getAll(connection);
     const allRegistry = getRegistryList();
     const publicRegistryAuth = allRegistry.find(o => o.name === 'public');
     //there could be more then 1 package with the same name (different registry)

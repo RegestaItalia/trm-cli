@@ -9,7 +9,7 @@ module.exports = async (args) => {
     
     logger.loading("Reading installed packages...");
 
-    const allManifest = await getAll(adtClient);
+    const allManifest = await getAll(connection);
     var consoleObj = [];
     allManifest.forEach(obj => {
         const manifest = obj.manifest;

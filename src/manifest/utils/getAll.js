@@ -1,8 +1,11 @@
 const listAllSktdManifests = require('../sktd/utils/listAllManifests');
 const listAllIntfManifests = require('../intf/utils/listAllManifests');
 const validateManifest = require('./validateManifest');
+const { getTadirEntry } = require('../../functions');
 
-module.exports = async (adtClient, keepInvalid) => {
+module.exports = async (connection, keepInvalid) => {
+    const adtClient = connection.adtClient;
+    const rfcClient = connection.rfcClient;
     var allObjs = [];
     const allSktd = await listAllSktdManifests(adtClient);
     var allIntf = await listAllIntfManifests(adtClient);
@@ -17,9 +20,18 @@ module.exports = async (adtClient, keepInvalid) => {
 
     var filtered = [];
     //filter results
-    //TODO if !o["adtcore:packageName"], get via fm
-    allObjs.forEach(o => {
+    for(var o of allObjs){
         if (o.manifest) {
+            if(!o.adtObject["adtcore:packageName"]){
+                //missing devclass from adt api
+                //this will likely lead to unknown errors if not fixed
+                const tadirEntry = await getTadirEntry(rfcClient, {
+                    pgmid: 'R3TR',
+                    object: o.adtObject["adtcore:type"].slice(0, 4),
+                    objName: o.adtObject["adtcore:name"]
+                });
+                o.adtObject["adtcore:packageName"] = tadirEntry.devclass;
+            }
             try {
                 o.manifest = validateManifest(o.manifest);
                 filtered.push(o);
@@ -30,6 +42,6 @@ module.exports = async (adtClient, keepInvalid) => {
                 }
             }
         }
-    });
+    }
     return filtered;
 }

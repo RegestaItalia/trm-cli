@@ -43,7 +43,7 @@ module.exports = async (args) => {
                     connection = await getConnection(client);
                 }
             }
-            const trmDependencies = await checkTrmDependencies(connection.adtClient);
+            const trmDependencies = await checkTrmDependencies(connection);
             if (trmDependencies.missingPackages.length > 0) {
                 throw new Error(`Required dependencies ${trmDependencies.missingPackages.map(o => o.name).join(', ')} missing in system ${connection.client.dest}.`);
             }

@@ -23,7 +23,7 @@ module.exports = async(args) => {
 
     const packageNs = getPackageNamespace(devclass);
     const objPrefix = packageNs === '$' ? 'Z' : packageNs;
-    const objNumerator = await getNextNumerator(adtClient);
+    const objNumerator = await getNextNumerator(connection);
     const objName = `${objPrefix}${manifestConstants.OBJ_PREFIX}${objNumerator}`;
     const useSktd = await sktdIsSupported(adtClient);
     const useIntf = await intfIsSupported(adtClient);

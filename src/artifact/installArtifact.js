@@ -58,7 +58,7 @@ module.exports = async (args) => {
     
         if(dependencies.length > 0){
             logger.loading(`This package has ${dependencies.length} dependencies...`);
-            const allManifests = await getAll(adtClient);
+            const allManifests = await getAll(connection);
             var toInstall = [];
             dependencies.forEach(depCheck => {
                 const foundManifest = allManifests.find(o => {
@@ -108,7 +108,7 @@ module.exports = async (args) => {
         //check if install or update
         //find matching manifest compairing name and registry
         logger.loading(`Reading data from ${connection.client.dest}...`);
-        const updateManifest = await findInstalledPackageManifest(adtClient, packageName, registryInstance);
+        const updateManifest = await findInstalledPackageManifest(connection, packageName, registryInstance);
         var packageMap = {};
     
         //if matching manifest found, we're not installing but updating

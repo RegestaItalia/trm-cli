@@ -1,9 +1,9 @@
 const { getAll } = require("../../manifest/utils");
 
-module.exports = async(adtClient, packageName, registryInstance) => {
+module.exports = async(connection, packageName, registryInstance) => {
     const registryType = registryInstance.getRegistryType();
     const registryAddress = registryInstance.getAddress();
-    const allSystemManifests = await getAll(adtClient);
+    const allSystemManifests = await getAll(connection);
     const updateManifest = allSystemManifests.find(o => {
         const manifestRegistry = o.manifest.registry;
         const manifestName = o.manifest.name;
