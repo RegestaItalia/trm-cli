@@ -30,7 +30,7 @@ const addRegistry = program.command('addRegistry <name>')
 
 
 const profile = program.command('profile')
-    .description('Change user profile parameter for registry');
+    .description('Show registry profile informations');
 
 const viewPackage = program.command('view <name>')
     .description('View installed package info')
