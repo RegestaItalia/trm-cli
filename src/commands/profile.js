@@ -22,7 +22,7 @@ module.exports = async(args, changeLogonData) => {
         type: "confirm",
         message: "Change logon data?",
         name: "changeLogonData",
-        default: changeLogonData
+        default: changeLogonData === undefined ? false : changeLogonData
     }]);
     if(answers.changeLogonData){
         await authRegistry(args.registryData.name);
