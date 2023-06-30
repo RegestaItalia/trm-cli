@@ -1,6 +1,6 @@
 {
   "name": "trm-client",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "TRM (Transport Request Manager)",
   "author": "Simone Gaffurini <simone.gaffurini@regestaitalia.it>",
   "repository": "RegestaItalia/trm-cli",

@@ -4,3 +4,4 @@ node_modules
 .gitignore
 .env
 img
+dev_rfc.log
