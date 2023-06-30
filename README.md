@@ -1,4 +1,4 @@
-# <a href="https://trmregistry.regestaitalia.it/"><img src="img/logo.png" height="40" alt="logo"></a>
+# <a href="https://trmregistry.regestaitalia.it/"><img src="doc/assets/logo.png" height="40" alt="logo"></a>
 ![NPM](https://img.shields.io/npm/l/trm-client)
 ![npm](https://img.shields.io/npm/v/trm-client)
 ![npm](https://img.shields.io/npm/dt/trm-client)
@@ -20,6 +20,8 @@ It relies on a registry, where the packages are stored and ready to be downloade
 - [R3Trans program](https://github.com/RegestaItalia/node-r3trans#installation) locally installed
 
 ## Installation
+More info on installation (requirements included) can be found [here](./doc/installation.md).
+
 ```
 🛈 Before installing trm-client, check that all the requirements are met.
 ```
