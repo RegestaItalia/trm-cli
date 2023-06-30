@@ -20,10 +20,10 @@ module.exports = async (connection, oTrmDependencies) => {
             range: targetVersion
         };
         if(oManifest && oManifest.manifest.version){
+            oObj.installedVersion = oManifest.manifest.version;
             if(semverSatisfies(oManifest.manifest.version, targetVersion)){
                 oRet.validPackages.push(oObj);
             }else{
-                oObj.installedVersion = oManifest.manifest.version;
                 oRet.mismatchPackages.push(oObj);
             }
         }else{

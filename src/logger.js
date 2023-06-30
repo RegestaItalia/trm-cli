@@ -61,6 +61,14 @@ class PrivateLogger {
             }
         }
     }
+    log(text){
+        if(this.cliObj){
+            if(this.loader){
+                this.cliObj.stop();
+            }
+            console.log(text);
+        }
+    }
     table(header, data) {
         if(this.type === 'cli'){
             var table = new Table({
