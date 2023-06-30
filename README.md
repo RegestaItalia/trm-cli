@@ -94,7 +94,7 @@ trm publish <package_name>
 ### Public registry
 trm-client defaults all registry related commands to the default registry.
 
-All packages published on the public registry can be seen [here](https://trmregistry.regestaitalia.it/).
+All packages published on the public registry can be seen [here](https://www.trmregistry.com/).
 
 If you wish to publish a package to the public registry or access private packages, you will need to create an account and log in.
 
