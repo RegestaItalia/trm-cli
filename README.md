@@ -79,7 +79,7 @@ Try running this command:
 ```
 trm view trm-server
 ```
-You should see informations about the trm-server version you have installed.
+You should see information about the trm-server version you have installed.
 
 ### Installing a package
 
