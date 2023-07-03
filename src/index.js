@@ -2,11 +2,12 @@
 const { Command } = require('commander');
 const program = new Command();
 const { registerCommand } = require('./commands/utils');
+const { getTrmVersion } = require('./utils/commons');
 
 program
     .name('trm')
     .description('TRM - Transport Request Manager CLI')
-    .version('1.0.0');
+    .version(getTrmVersion());
 
 const info = program.command('info')
     .description('Get TRM infos');
