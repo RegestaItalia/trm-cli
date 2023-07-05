@@ -61,6 +61,7 @@ const unpublish = program.command('unpublish <package>')
 const install = program.command('install <package>')
     .description('Install package from registry to system')
     .option('-v, --version <version>', 'Package version to install', 'latest')
+    .option('-fd, --force-dependencies', 'Force dependency install', false)
     .option('-pm, --package-map <json>', 'Package map, object serialized as json containing key -> original package, value -> target package. Passing the package map as argument on packages with dependencies will not have any effect.', '{}')
     .option('-rs, --requirements-check', 'Check requirements', true)
     .option('-vc, --version-check', 'Compare installed version', true);

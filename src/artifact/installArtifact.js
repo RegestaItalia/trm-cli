@@ -82,12 +82,19 @@ module.exports = async (args) => {
             });
             if(toInstall.length > 0){
                 logger.warning(`${toInstall.length} dependencies must be installed in order to continue.`);
-                const installDependencies = await inquirer.prompt({
-                    type: "confirm",
-                    message: `${toInstall.length} dependencies will be installed. Continue?`,
-                    name: 'continue',
-                    default: true
-                });
+                var installDependencies;
+                if(!args.forceDependencies){
+                    installDependencies = await inquirer.prompt({
+                        type: "confirm",
+                        message: `${toInstall.length} dependencies will be installed. Continue?`,
+                        name: 'continue',
+                        default: true
+                    });
+                }else{
+                    installDependencies = {
+                        continue: true
+                    };
+                }
                 if (!installDependencies.continue) {
                     logger.info(`Installation of ${packageName} aborted.`);
                     return;
@@ -227,7 +234,7 @@ module.exports = async (args) => {
             var validatePackage = await validateInputPackage(adtClient, package, ns);
             if (!packageMap[package] || validatePackage.valid !== 4) {
                 var defaultPackageValue;
-                if(args.packageMap && !args.installingDependency){
+                if(args.packageMap){
                     defaultPackageValue = args.packageMap[package];
                 }
                 if(defaultPackageValue){
