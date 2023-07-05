@@ -120,6 +120,10 @@ module.exports = async (args) => {
         } else {
             packageDefaults = getManifestValues(args);
             if (!args.forceManifestInput) {
+                if(!version){
+                    version = await generateVersion(registryInstance, packageName);
+                    logger.info(`Generated version ${version}`);
+                }
                 packageDefaults.name = packageName;
                 packageDefaults.version = version;
                 packageDefaults.private = private;
