@@ -10,5 +10,7 @@ module.exports = {
     getTrmVersion: require('./getTrmVersion'),
     parseError: require('./parseError'),
     normalizeUrl: require('./normalizeUrl'),
-    getPackageNamespace: require('./getPackageNamespace')
+    getPackageNamespace: require('./getPackageNamespace'),
+    capitalizeFirstLetter: require('./capitalizeFirstLetter'),
+    checkUpdate: require('./checkUpdate')
 }

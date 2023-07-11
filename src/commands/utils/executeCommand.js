@@ -1,7 +1,7 @@
 const { getAliasConnection, getConnection } = require("../../connection");
 const commands = require('..');
 const { pickRegistry, printMessage } = require('../registry');
-const { parseError } = require('../../utils/commons');
+const { parseError, checkUpdate } = require('../../utils/commons');
 const Logger = require('../../logger');
 const { getRegistryList } = require("../../roamingFolder");
 const { registry } = require("../../registry");
@@ -9,6 +9,12 @@ const { checkTrmDependencies } = require("../../utils");
 
 module.exports = async (args) => {
     const logger = Logger.getInstance();
+    const checkCliUpdate = await checkUpdate();
+    if(checkCliUpdate){
+        logger.warning(checkCliUpdate.updateAvailable);
+        logger.warning(checkCliUpdate.runUpdate);
+    }
+
     var exitCode;
     try {
         var commandArgs = {};
