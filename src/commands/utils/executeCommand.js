@@ -43,14 +43,16 @@ module.exports = async (args) => {
                     connection = await getConnection(client);
                 }
             }
-            const trmDependencies = await checkTrmDependencies(connection);
-            if (trmDependencies.missingPackages.length > 0) {
-                throw new Error(`Required dependencies ${trmDependencies.missingPackages.map(o => o.name).join(', ')} missing in system ${connection.client.dest}.`);
-            }
-            if (trmDependencies.mismatchPackages.length > 0) {
-                trmDependencies.mismatchPackages.forEach(o => {
-                    logger.warning(`Package ${o.name}, version ${o.installedVersion}, in system ${connection.client.dest} doesn't meet dependency requirement ${o.range}. Upgrade to avoid unexpected errors.`)
-                });
+            if(!args.skipTrmDependencies){
+                const trmDependencies = await checkTrmDependencies(connection);
+                if (trmDependencies.missingPackages.length > 0) {
+                    throw new Error(`Required dependencies ${trmDependencies.missingPackages.map(o => o.name).join(', ')} missing in system ${connection.client.dest}.`);
+                }
+                if (trmDependencies.mismatchPackages.length > 0) {
+                    trmDependencies.mismatchPackages.forEach(o => {
+                        logger.warning(`Package ${o.name}, version ${o.installedVersion}, in system ${connection.client.dest} doesn't meet dependency requirement ${o.range}. Upgrade to avoid unexpected errors.`)
+                    });
+                }
             }
         } else {
             connection = null;

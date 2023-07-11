@@ -68,7 +68,8 @@ const install = program.command('install <package>')
 
 registerCommand(info, {
     skipCreateAlias: true,
-    skipRegistry: true
+    skipRegistry: true,
+    skipTrmDependencies: true
 });
 
 registerCommand(createAlias, {
@@ -77,7 +78,8 @@ registerCommand(createAlias, {
 });
 
 registerCommand(listPackages, {
-    skipRegistry: true
+    skipRegistry: true,
+    skipTrmDependencies: true
 });
 
 registerCommand(addRegistry, {
@@ -86,7 +88,8 @@ registerCommand(addRegistry, {
 });
 
 registerCommand(viewPackage, {
-    skipRegistry: true
+    skipRegistry: true,
+    skipTrmDependencies: true
 });
 
 registerCommand(profile, {
